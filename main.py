@@ -1,34 +1,47 @@
-import threading
+import collections
 
-def locked_method(func):
-    def new_method(self, *args, **kwargs):
-        with self.lock:
-            func(self, *args, **kwargs)
+class FifoQueue(collections.deque):
+    def __init__(self):
+        super().__init__()
 
-    return new_method
+    def isEmpty(self):
+        return len(self) == 0
 
-class DecoratorList(list):
-    def __init__(self, *args, **kwargs):
-        self.lock = threading.Lock()
-        super(DecoratorList, self).__init__(*args, **kwargs)
+    def isFull(self):
+        return len(self) == self.maxlen
 
-    @locked_method
-    def insert(self, idx, obj):
-        super(DecoratorList, self).insert(idx, obj)
+    def size(self):
+        return len(self)
 
-    @locked_method
-    def remove(self, obj):
-        super(DecoratorList, self).remove(obj)
+    def front(self):
+        return self[0]
+
+    def rear(self):
+        return self[-1]
+
+    def enque(self, elem):
+        self.append(elem)
+
+    def deque(self):
+        return self.popleft()
 
 def main():
-    decoratorList = DecoratorList()
-    decoratorList.insert(0, 'first')
-    decoratorList.insert(0, 'second')
-    decoratorList.insert(0, 'third')
+    fq = FifoQueue()
 
-    decoratorList.remove('second')
-
-    print(decoratorList)
+    print(fq.isEmpty())
+    print(fq.isFull())
+    fq.enque(1)
+    fq.enque(2)
+    fq.enque(3)
+    print(fq.front())
+    print(fq.rear())
+    print(fq.size())
+    print(fq.isEmpty())
+    print(fq.deque())
+    print(fq.front())
+    print(fq.deque())
+    print(fq.deque())
+    print(fq.isEmpty())
 
 if __name__ == "__main__":
     main()
